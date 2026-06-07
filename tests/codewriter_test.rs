@@ -106,3 +106,15 @@ fn test_write_push_static() {
     std::fs::remove_file("test_static.asm").unwrap();
 }
 
+#[test]
+fn test_write_pop_local() {
+    let mut writer = CodeWriter::new("test_pop.asm").unwrap();
+    writer.write_pop("local", 3).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop.asm").unwrap();
+    let expected = "@3\nD=A\n@LCL\nD=M+D\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop.asm").unwrap();
+}
