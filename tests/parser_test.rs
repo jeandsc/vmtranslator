@@ -105,3 +105,80 @@ fn test_push_pop_mixed() {
     
     std::fs::remove_file("temp.vm").unwrap();
 }
+
+#[test]
+fn test_arithmetic_add() {
+    let content = "add";
+    std::fs::write("temp.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CArithmetic));
+    assert_eq!(cmd.arg1, "add");
+    assert_eq!(cmd.arg2, None);
+    
+    std::fs::remove_file("temp.vm").unwrap();
+}
+
+#[test]
+fn test_arithmetic_all() {
+    let operations = vec!["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"];
+    
+    for op in operations {
+        let content = format!("{}", op);
+        std::fs::write("temp.vm", &content).unwrap();
+        
+        let mut parser = Parser::new("temp.vm").unwrap();
+        parser.advance();
+        let cmd = parser.current();
+        
+        assert!(matches!(cmd.cmd_type, CommandType::CArithmetic));
+        assert_eq!(cmd.arg1, op);
+        assert_eq!(cmd.arg2, None);
+        
+        std::fs::remove_file("temp.vm").unwrap();
+    }
+}
+
+#[test]
+fn test_mixed_with_arithmetic() {
+    let content = "
+        push constant 7
+        push constant 8
+        add
+        pop local 0
+        push constant 5
+        neg
+        pop argument 1
+    ";
+    std::fs::write("temp.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp.vm").unwrap();
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CPush));
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CPush));
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CArithmetic));
+    assert_eq!(parser.current().arg1, "add");
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CPop));
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CPush));
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CArithmetic));
+    assert_eq!(parser.current().arg1, "neg");
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CPop));
+    
+    std::fs::remove_file("temp.vm").unwrap();
+}
