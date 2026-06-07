@@ -216,3 +216,15 @@ fn test_write_arithmetic_add() {
     assert_eq!(content, expected);
     std::fs::remove_file("test_add.asm").unwrap();
 }
+#[test]
+fn test_write_arithmetic_sub() {
+    let mut writer = CodeWriter::new("test_sub.asm").unwrap();
+    writer.write_arithmetic("sub").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_sub.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nM=M-D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_sub.asm").unwrap();
+}
