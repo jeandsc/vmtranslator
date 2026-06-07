@@ -27,3 +27,81 @@ fn test_write_push_local() {
     
     std::fs::remove_file("test_local.asm").unwrap();
 }
+
+#[test]
+fn test_write_push_argument() {
+    let mut writer = CodeWriter::new("test_arg.asm").unwrap();
+    writer.write_push("argument", 5).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_arg.asm").unwrap();
+    let expected = "@5\nD=A\n@ARG\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_arg.asm").unwrap();
+}
+
+#[test]
+fn test_write_push_this() {
+    let mut writer = CodeWriter::new("test_this.asm").unwrap();
+    writer.write_push("this", 2).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_this.asm").unwrap();
+    let expected = "@2\nD=A\n@THIS\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_this.asm").unwrap();
+}
+
+#[test]
+fn test_write_push_that() {
+    let mut writer = CodeWriter::new("test_that.asm").unwrap();
+    writer.write_push("that", 9).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_that.asm").unwrap();
+    let expected = "@9\nD=A\n@THAT\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_that.asm").unwrap();
+}
+
+#[test]
+fn test_write_push_temp() {
+    let mut writer = CodeWriter::new("test_temp.asm").unwrap();
+    writer.write_push("temp", 1).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_temp.asm").unwrap();
+    let expected = "@6\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_temp.asm").unwrap();
+}
+
+#[test]
+fn test_write_push_pointer() {
+    let mut writer = CodeWriter::new("test_pointer.asm").unwrap();
+    writer.write_push("pointer", 0).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pointer.asm").unwrap();
+    let expected = "@3\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pointer.asm").unwrap();
+}
+
+#[test]
+fn test_write_push_static() {
+    let mut writer = CodeWriter::new("test_static.asm").unwrap();
+    writer.write_push("static", 42).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_static.asm").unwrap();
+    let expected = "@test_static.42\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_static.asm").unwrap();
+}
