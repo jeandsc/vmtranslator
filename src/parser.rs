@@ -50,4 +50,15 @@ impl Parser {
             current: None,
         })
     }
+    pub fn has_more_commands(&self) -> bool {
+        self.index < self.commands.len()
+    }
+    
+    pub fn advance(&mut self) {
+        self.current = Some(self.commands[self.index].clone());
+        self.index += 1;
+    }
+    pub fn current(&self) -> &ParsedCommand {
+    self.current.as_ref().unwrap()
+    }
 }
