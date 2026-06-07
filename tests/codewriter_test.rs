@@ -240,3 +240,79 @@ fn test_write_arithmetic_neg() {
     assert_eq!(content, expected);
     std::fs::remove_file("test_neg.asm").unwrap();
 }
+#[test]
+fn test_write_arithmetic_and() {
+    let mut writer = CodeWriter::new("test_and.asm").unwrap();
+    writer.write_arithmetic("and").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_and.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nM=D&M\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_and.asm").unwrap();
+}
+
+#[test]
+fn test_write_arithmetic_or() {
+    let mut writer = CodeWriter::new("test_or.asm").unwrap();
+    writer.write_arithmetic("or").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_or.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nM=D|M\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_or.asm").unwrap();
+}
+
+#[test]
+fn test_write_arithmetic_not() {
+    let mut writer = CodeWriter::new("test_not.asm").unwrap();
+    writer.write_arithmetic("not").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_not.asm").unwrap();
+    let expected = "@SP\nA=M-1\nM=!M\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_not.asm").unwrap();
+}
+#[test]
+fn test_write_arithmetic_eq() {
+    let mut writer = CodeWriter::new("test_eq.asm").unwrap();
+    writer.write_arithmetic("eq").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_eq.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@EQ_TRUE_0\nD;JEQ\nD=0\n@EQ_END_0\n0;JMP\n(EQ_TRUE_0)\nD=-1\n(EQ_END_0)\n@SP\nA=M-1\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_eq.asm").unwrap();
+}
+
+#[test]
+fn test_write_arithmetic_gt() {
+    let mut writer = CodeWriter::new("test_gt.asm").unwrap();
+    writer.write_arithmetic("gt").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_gt.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@GT_TRUE_0\nD;JGT\nD=0\n@GT_END_0\n0;JMP\n(GT_TRUE_0)\nD=-1\n(GT_END_0)\n@SP\nA=M-1\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_gt.asm").unwrap();
+}
+
+#[test]
+fn test_write_arithmetic_lt() {
+    let mut writer = CodeWriter::new("test_lt.asm").unwrap();
+    writer.write_arithmetic("lt").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_lt.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@LT_TRUE_0\nD;JLT\nD=0\n@LT_END_0\n0;JMP\n(LT_TRUE_0)\nD=-1\n(LT_END_0)\n@SP\nA=M-1\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_lt.asm").unwrap();
+}

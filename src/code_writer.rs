@@ -4,6 +4,7 @@ use std::io::Write;
 pub struct CodeWriter {
     file: File,
     filename: String,
+    label_counter: u32
 }
 
 impl CodeWriter {
@@ -13,6 +14,7 @@ impl CodeWriter {
         Ok(CodeWriter {
             file,
             filename,
+            label_counter: 0,
         })
     }
     
@@ -224,6 +226,91 @@ impl CodeWriter {
                 writeln!(self.file, "@SP")?;
                 writeln!(self.file, "A=M-1")?;
                 writeln!(self.file, "M=-M")?;
+            },
+            "and" => {
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "A=A-1")?;
+                writeln!(self.file, "M=D&M")?;
+            },
+            "or" => {
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "A=A-1")?;
+                writeln!(self.file, "M=D|M")?;
+            },
+            "not" => {
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "A=M-1")?;
+                writeln!(self.file, "M=!M")?;
+            },
+            "eq" => {
+                let label_true = format!("EQ_TRUE_{}", self.label_counter);
+                let label_end = format!("EQ_END_{}", self.label_counter);
+                self.label_counter += 1;
+                
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "A=A-1")?;
+                writeln!(self.file, "D=M-D")?;
+                writeln!(self.file, "@{}", label_true)?;
+                writeln!(self.file, "D;JEQ")?;
+                writeln!(self.file, "D=0")?;
+                writeln!(self.file, "@{}", label_end)?;
+                writeln!(self.file, "0;JMP")?;
+                writeln!(self.file, "({})", label_true)?;
+                writeln!(self.file, "D=-1")?;
+                writeln!(self.file, "({})", label_end)?;
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "A=M-1")?;
+                writeln!(self.file, "M=D")?;
+            },
+            "gt" => {
+                let label_true = format!("GT_TRUE_{}", self.label_counter);
+                let label_end = format!("GT_END_{}", self.label_counter);
+                self.label_counter += 1;
+                
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "A=A-1")?;
+                writeln!(self.file, "D=M-D")?;
+                writeln!(self.file, "@{}", label_true)?;
+                writeln!(self.file, "D;JGT")?;
+                writeln!(self.file, "D=0")?;
+                writeln!(self.file, "@{}", label_end)?;
+                writeln!(self.file, "0;JMP")?;
+                writeln!(self.file, "({})", label_true)?;
+                writeln!(self.file, "D=-1")?;
+                writeln!(self.file, "({})", label_end)?;
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "A=M-1")?;
+                writeln!(self.file, "M=D")?;
+            },
+            "lt" => {
+                let label_true = format!("LT_TRUE_{}", self.label_counter);
+                let label_end = format!("LT_END_{}", self.label_counter);
+                self.label_counter += 1;
+                
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "A=A-1")?;
+                writeln!(self.file, "D=M-D")?;
+                writeln!(self.file, "@{}", label_true)?;
+                writeln!(self.file, "D;JLT")?;
+                writeln!(self.file, "D=0")?;
+                writeln!(self.file, "@{}", label_end)?;
+                writeln!(self.file, "0;JMP")?;
+                writeln!(self.file, "({})", label_true)?;
+                writeln!(self.file, "D=-1")?;
+                writeln!(self.file, "({})", label_end)?;
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "A=M-1")?;
+                writeln!(self.file, "M=D")?;
             },
             _ => panic!("Operação desconhecida: {}", operation),
     }
