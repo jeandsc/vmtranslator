@@ -1,13 +1,15 @@
 //usando enum e struct para os comandos 
-enum CommandType {
+#[derive(Debug, PartialEq, Clone)] 
+pub enum CommandType {
     CPush,
     CPop,
     CArithmetic,
 }
-struct ParsedCommand {
-    cmd_type: CommandType,
-    arg1: String,
-    arg2: Option<u16>,
+#[derive(Debug, PartialEq, Clone)] 
+pub struct ParsedCommand {
+    pub cmd_type: CommandType,
+    pub arg1: String,
+    pub arg2: Option<u16>,
 }
 
 
