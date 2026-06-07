@@ -228,3 +228,15 @@ fn test_write_arithmetic_sub() {
     assert_eq!(content, expected);
     std::fs::remove_file("test_sub.asm").unwrap();
 }
+#[test]
+fn test_write_arithmetic_neg() {
+    let mut writer = CodeWriter::new("test_neg.asm").unwrap();
+    writer.write_arithmetic("neg").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_neg.asm").unwrap();
+    let expected = "@SP\nA=M-1\nM=-M\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_neg.asm").unwrap();
+}

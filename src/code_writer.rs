@@ -220,6 +220,11 @@ impl CodeWriter {
                 writeln!(self.file, "A=A-1")?;
                 writeln!(self.file, "M=M-D")?;
             },
+            "neg" => {
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "A=M-1")?;
+                writeln!(self.file, "M=-M")?;
+            },
             _ => panic!("Operação desconhecida: {}", operation),
     }
         Ok(())
