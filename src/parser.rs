@@ -53,6 +53,9 @@ impl Parser {
                     if !Self::validate_segment(segment) {
                         panic!("Segmento inválido: {}", segment);
                     }
+                    if segment == "constant" {
+                        panic!("Segmento inválido: {}", segment);
+                    }
                     ParsedCommand {
 
                     cmd_type: CommandType::CPop,
@@ -67,7 +70,7 @@ impl Parser {
                         arg2: None,
                     }
                 },
-                
+
                 _ => panic!("Comando desconhecido: {}", tokens[0]),
             };
             

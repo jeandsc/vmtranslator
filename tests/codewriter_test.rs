@@ -105,3 +105,4 @@ fn test_write_push_static() {
     assert_eq!(content, expected);
     std::fs::remove_file("test_static.asm").unwrap();
 }
+

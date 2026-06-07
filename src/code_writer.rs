@@ -39,7 +39,7 @@ impl CodeWriter {
                 writeln!(self.file, "@SP")?;
                 writeln!(self.file, "M=M+1")?;
             },
-                        "argument" => {
+            "argument" => {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@ARG")?;
@@ -108,6 +108,26 @@ impl CodeWriter {
     }
     
     pub fn write_pop(&mut self, segment: &str, index: u16) -> std::io::Result<()> {
+        match segment {
+            "constant" => {
+                panic!("Não pode pop constant");
+            },
+            "local" => {
+                writeln!(self.file, "@{}", index)?;
+                writeln!(self.file, "D=A")?;
+                writeln!(self.file, "@LCL")?;
+                writeln!(self.file, "D=M+D")?;
+                writeln!(self.file, "@R13")?;
+                writeln!(self.file, "M=D")?;
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "@R13")?;
+                writeln!(self.file, "A=M")?;
+                writeln!(self.file, "M=D")?;
+            },
+            _ => panic!("Segmento desconhecido: {}", segment),
+        }
         Ok(())
     }
     
