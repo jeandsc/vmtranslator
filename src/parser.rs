@@ -48,6 +48,19 @@ impl Parser {
                     }
 
                 },
+                "pop" => {
+                    let segment = tokens[1];
+                    if !Self::validate_segment(segment) {
+                        panic!("Segmento inválido: {}", segment);
+                    }
+                    ParsedCommand {
+
+                    cmd_type: CommandType::CPop,
+                    arg1: tokens[1].to_string(),
+                    arg2: Some(tokens[2].parse().unwrap()),
+                    }
+
+                },
                 _ => panic!("Comando desconhecido: {}", tokens[0]),
             };
             
