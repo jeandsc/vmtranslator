@@ -59,8 +59,15 @@ impl Parser {
                     arg1: tokens[1].to_string(),
                     arg2: Some(tokens[2].parse().unwrap()),
                     }
-
                 },
+                "add" | "sub" | "neg" | "eq" | "gt" | "lt" | "and" | "or" | "not" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CArithmetic,
+                        arg1: tokens[0].to_string(),
+                        arg2: None,
+                    }
+                },
+                
                 _ => panic!("Comando desconhecido: {}", tokens[0]),
             };
             
