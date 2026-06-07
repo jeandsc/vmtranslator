@@ -41,7 +41,7 @@ fn test_multiple_commands() {
 }
 
 #[test]
-#[should_panic(expected = "Segmento inválido")]
+#[should_panic(expected = "Segmento inválido: xyz")]
 fn test_invalid_segment() {
     let content = "push xyz 5";
     std::fs::write("temp.vm", content).unwrap();
@@ -50,7 +50,7 @@ fn test_invalid_segment() {
 }
 
 #[test]
-#[should_panic(expected = "comando desconhecido")]
+#[should_panic(expected = "Comando desconhecido: foo")]
 fn test_unknown_command() {
     let content = "foo bar 5";
     std::fs::write("temp.vm", content).unwrap();

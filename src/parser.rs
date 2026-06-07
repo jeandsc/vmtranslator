@@ -35,10 +35,18 @@ impl Parser {
             
             
             let cmd = match tokens[0] {
-                "push" => ParsedCommand {
+                "push" => {
+                    let segment = tokens[1];
+                    if !Self::validate_segment(segment) {
+                        panic!("Segmento inválido: {}", segment);
+                    }
+                    ParsedCommand {
+
                     cmd_type: CommandType::CPush,
                     arg1: tokens[1].to_string(),
                     arg2: Some(tokens[2].parse().unwrap()),
+                    }
+
                 },
                 _ => panic!("Comando desconhecido: {}", tokens[0]),
             };
@@ -61,6 +69,12 @@ impl Parser {
         self.index += 1;
     }
     pub fn current(&self) -> &ParsedCommand {
-    self.current.as_ref().unwrap()
+        self.current.as_ref().unwrap()
+    }
+    fn validate_segment(segment: &str) -> bool {
+        match segment {
+            "constant" | "local" | "argument" | "this" | "that" | "temp" | "pointer" | "static" => true,
+            _ => false,
+        }
     }
 }
