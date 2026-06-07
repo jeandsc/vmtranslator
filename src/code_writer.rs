@@ -14,6 +14,18 @@ impl CodeWriter {
     }
     
     pub fn write_push(&mut self, segment: &str, index: u16) -> std::io::Result<()> {
+        match segment {
+            "constant" => {
+                writeln!(self.file, "@{}", index)?;
+                writeln!(self.file, "D=A")?;
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "A=M")?;
+                writeln!(self.file, "M=D")?;
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "M=M+1")?;
+            },
+            _ => panic!("Segmento desconhecido: {}", segment),
+        }
         Ok(())
     }
     
