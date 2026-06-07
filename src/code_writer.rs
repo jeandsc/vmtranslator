@@ -205,6 +205,16 @@ impl CodeWriter {
     }
     
     pub fn write_arithmetic(&mut self, operation: &str) -> std::io::Result<()> {
+        match operation {
+            "add" => {
+                writeln!(self.file, "@SP")?;
+                writeln!(self.file, "AM=M-1")?;
+                writeln!(self.file, "D=M")?;
+                writeln!(self.file, "A=A-1")?;
+                writeln!(self.file, "M=D+M")?;
+            },
+            _ => panic!("Operação desconhecida: {}", operation),
+    }
         Ok(())
     }
     

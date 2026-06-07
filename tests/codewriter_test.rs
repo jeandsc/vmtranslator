@@ -204,3 +204,15 @@ fn test_write_pop_constant() {
     writer.write_pop("constant", 5).unwrap();
     std::fs::remove_file("test_pop_constant.asm").unwrap();
 }
+#[test]
+fn test_write_arithmetic_add() {
+    let mut writer = CodeWriter::new("test_add.asm").unwrap();
+    writer.write_arithmetic("add").unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_add.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\nA=A-1\nM=D+M\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_add.asm").unwrap();
+}
