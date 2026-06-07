@@ -39,3 +39,21 @@ fn test_multiple_commands() {
     
     std::fs::remove_file("temp.vm").unwrap();
 }
+
+#[test]
+#[should_panic(expected = "Segmento inválido")]
+fn test_invalid_segment() {
+    let content = "push xyz 5";
+    std::fs::write("temp.vm", content).unwrap();
+    let _ = Parser::new("temp.vm").unwrap();
+    std::fs::remove_file("temp.vm").unwrap();
+}
+
+#[test]
+#[should_panic(expected = "comando desconhecido")]
+fn test_unknown_command() {
+    let content = "foo bar 5";
+    std::fs::write("temp.vm", content).unwrap();
+    let _ = Parser::new("temp.vm").unwrap();
+    std::fs::remove_file("temp.vm").unwrap();
+}
