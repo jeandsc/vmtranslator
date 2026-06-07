@@ -5,10 +5,10 @@ pub struct CodeWriter {
     file: File,
 }
 
-impl AsmWriter {
+impl CodeWriter {
     pub fn new(filename: &str) -> Result<Self, std::io::Error> {
         let file = File::create(filename)?;
-        Ok(AsmWriter {
+        Ok(CodeWriter {
             file,
         })
     }
