@@ -108,13 +108,99 @@ fn test_write_push_static() {
 
 #[test]
 fn test_write_pop_local() {
-    let mut writer = CodeWriter::new("test_pop.asm").unwrap();
+    let mut writer = CodeWriter::new("test_pop_local.asm").unwrap();
     writer.write_pop("local", 3).unwrap();
     writer.close().unwrap();
     
-    let content = std::fs::read_to_string("test_pop.asm").unwrap();
+    let content = std::fs::read_to_string("test_pop_local.asm").unwrap();
     let expected = "@3\nD=A\n@LCL\nD=M+D\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
     
     assert_eq!(content, expected);
-    std::fs::remove_file("test_pop.asm").unwrap();
+    std::fs::remove_file("test_pop_local.asm").unwrap();
+}
+#[test]
+fn test_write_pop_argument() {
+    let mut writer = CodeWriter::new("test_pop_argument.asm").unwrap();
+    writer.write_pop("argument", 5).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop_argument.asm").unwrap();
+    let expected = "@5\nD=A\n@ARG\nD=M+D\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop_argument.asm").unwrap();
+}
+
+#[test]
+fn test_write_pop_this() {
+    let mut writer = CodeWriter::new("test_pop_this.asm").unwrap();
+    writer.write_pop("this", 2).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop_this.asm").unwrap();
+    let expected = "@2\nD=A\n@THIS\nD=M+D\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop_this.asm").unwrap();
+}
+
+#[test]
+fn test_write_pop_that() {
+    let mut writer = CodeWriter::new("test_pop_that.asm").unwrap();
+    writer.write_pop("that", 9).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop_that.asm").unwrap();
+    let expected = "@9\nD=A\n@THAT\nD=M+D\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop_that.asm").unwrap();
+}
+
+#[test]
+fn test_write_pop_temp() {
+    let mut writer = CodeWriter::new("test_pop_temp.asm").unwrap();
+    writer.write_pop("temp", 1).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop_temp.asm").unwrap();
+    let expected = "@6\nD=A\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop_temp.asm").unwrap();
+}
+
+#[test]
+fn test_write_pop_pointer() {
+    let mut writer = CodeWriter::new("test_pop_pointer.asm").unwrap();
+    writer.write_pop("pointer", 0).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop_pointer.asm").unwrap();
+    let expected = "@3\nD=A\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop_pointer.asm").unwrap();
+}
+
+#[test]
+fn test_write_pop_static() {
+    let mut writer = CodeWriter::new("test_pop_static.asm").unwrap();
+    
+    writer.write_pop("static", 42).unwrap();
+    writer.close().unwrap();
+    
+    let content = std::fs::read_to_string("test_pop_static.asm").unwrap();
+    let expected = "@SP\nAM=M-1\nD=M\n@test_pop_static.42\nM=D\n";
+    
+    assert_eq!(content, expected);
+    std::fs::remove_file("test_pop_static.asm").unwrap();
+}
+
+#[test]
+#[should_panic(expected = "Não pode pop constant")]
+fn test_write_pop_constant() {
+    let mut writer = CodeWriter::new("test_pop_constant.asm").unwrap();
+    writer.write_pop("constant", 5).unwrap();
+    std::fs::remove_file("test_pop_constant.asm").unwrap();
 }
