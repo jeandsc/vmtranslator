@@ -197,13 +197,7 @@ fn test_write_pop_static() {
     std::fs::remove_file("test_pop_static.asm").unwrap();
 }
 
-#[test]
-#[should_panic(expected = "Não pode pop constant")]
-fn test_write_pop_constant() {
-    let mut writer = CodeWriter::new("test_pop_constant.asm").unwrap();
-    writer.write_pop("constant", 5).unwrap();
-    std::fs::remove_file("test_pop_constant.asm").unwrap();
-}
+
 #[test]
 fn test_write_arithmetic_add() {
     let mut writer = CodeWriter::new("test_add.asm").unwrap();

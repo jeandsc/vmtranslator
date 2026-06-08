@@ -3,9 +3,9 @@ use vmtranslator::{Parser, CommandType};
 #[test]
 fn test_push_constant() {
     let content = "push constant 7";
-    std::fs::write("temp.vm", content).unwrap();
+    std::fs::write("temp_constant.vm", content).unwrap();
     
-    let mut parser = Parser::new("temp.vm").unwrap();
+    let mut parser = Parser::new("temp_constant.vm").unwrap();
     
     assert!(parser.has_more_commands());
     parser.advance();
@@ -15,7 +15,7 @@ fn test_push_constant() {
     assert_eq!(cmd.arg1, "constant");
     assert_eq!(cmd.arg2, Some(7));
     
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::remove_file("temp_constant.vm").unwrap();
 }
 #[test]
 fn test_multiple_commands() {
@@ -24,9 +24,9 @@ fn test_multiple_commands() {
         push constant 8
         push constant 42
     ";
-    std::fs::write("temp.vm", content).unwrap();
+    std::fs::write("temp_commands.vm", content).unwrap();
     
-    let mut parser = Parser::new("temp.vm").unwrap();
+    let mut parser = Parser::new("temp_commands.vm").unwrap();
     
     let expected = vec![7, 8, 42];
     
@@ -37,34 +37,34 @@ fn test_multiple_commands() {
         assert_eq!(cmd.arg2, Some(val));
     }
     
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::remove_file("temp_commands.vm").unwrap();
 }
 
 #[test]
 #[should_panic(expected = "Segmento inválido: xyz")]
 fn test_invalid_segment() {
     let content = "push xyz 5";
-    std::fs::write("temp.vm", content).unwrap();
-    let _ = Parser::new("temp.vm").unwrap();
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::write("temp_segment.vm", content).unwrap();
+    let _ = Parser::new("temp_segment.vm").unwrap();
+    std::fs::remove_file("temp_segment.vm").unwrap();
 }
 
 #[test]
 #[should_panic(expected = "Comando desconhecido: foo")]
 fn test_unknown_command() {
     let content = "foo bar 5";
-    std::fs::write("temp.vm", content).unwrap();
-    let _ = Parser::new("temp.vm").unwrap();
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::write("temp_unknown.vm", content).unwrap();
+    let _ = Parser::new("temp_unknown.vm").unwrap();
+    std::fs::remove_file("temp_unknown.vm").unwrap();
 }
 
 
 #[test]
 fn test_pop_local() {
     let content = "pop local 3";
-    std::fs::write("temp.vm", content).unwrap();
+    std::fs::write("temp_local.vm", content).unwrap();
     
-    let mut parser = Parser::new("temp.vm").unwrap();
+    let mut parser = Parser::new("temp_local.vm").unwrap();
     parser.advance();
     let cmd = parser.current();
     
@@ -72,7 +72,7 @@ fn test_pop_local() {
     assert_eq!(cmd.arg1, "local");
     assert_eq!(cmd.arg2, Some(3));
     
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::remove_file("temp_local.vm").unwrap();
 }
 
 #[test]
@@ -83,9 +83,9 @@ fn test_push_pop_mixed() {
         push constant 21
         pop argument 2
     ";
-    std::fs::write("temp.vm", content).unwrap();
+    std::fs::write("temp_mixed.vm", content).unwrap();
     
-    let mut parser = Parser::new("temp.vm").unwrap();
+    let mut parser = Parser::new("temp_mixed.vm").unwrap();
     
     parser.advance();
     assert!(matches!(parser.current().cmd_type, CommandType::CPush));
@@ -103,15 +103,15 @@ fn test_push_pop_mixed() {
     assert!(matches!(parser.current().cmd_type, CommandType::CPop));
     assert_eq!(parser.current().arg1, "argument");
     
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::remove_file("temp_mixed.vm").unwrap();
 }
 
 #[test]
 fn test_arithmetic_add() {
     let content = "add";
-    std::fs::write("temp.vm", content).unwrap();
+    std::fs::write("tempadd.vm", content).unwrap();
     
-    let mut parser = Parser::new("temp.vm").unwrap();
+    let mut parser = Parser::new("tempadd.vm").unwrap();
     parser.advance();
     let cmd = parser.current();
     
@@ -119,7 +119,7 @@ fn test_arithmetic_add() {
     assert_eq!(cmd.arg1, "add");
     assert_eq!(cmd.arg2, None);
     
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::remove_file("tempadd.vm").unwrap();
 }
 
 #[test]
@@ -128,9 +128,9 @@ fn test_arithmetic_all() {
     
     for op in operations {
         let content = format!("{}", op);
-        std::fs::write("temp.vm", &content).unwrap();
+        std::fs::write("temp_all.vm", &content).unwrap();
         
-        let mut parser = Parser::new("temp.vm").unwrap();
+        let mut parser = Parser::new("temp_all.vm").unwrap();
         parser.advance();
         let cmd = parser.current();
         
@@ -138,7 +138,7 @@ fn test_arithmetic_all() {
         assert_eq!(cmd.arg1, op);
         assert_eq!(cmd.arg2, None);
         
-        std::fs::remove_file("temp.vm").unwrap();
+        std::fs::remove_file("temp_all.vm").unwrap();
     }
 }
 
@@ -153,9 +153,9 @@ fn test_mixed_with_arithmetic() {
         neg
         pop argument 1
     ";
-    std::fs::write("temp.vm", content).unwrap();
+    std::fs::write("temp_arithmetic.vm", content).unwrap();
     
-    let mut parser = Parser::new("temp.vm").unwrap();
+    let mut parser = Parser::new("temp_arithmetic.vm").unwrap();
     
     parser.advance();
     assert!(matches!(parser.current().cmd_type, CommandType::CPush));
@@ -180,5 +180,5 @@ fn test_mixed_with_arithmetic() {
     parser.advance();
     assert!(matches!(parser.current().cmd_type, CommandType::CPop));
     
-    std::fs::remove_file("temp.vm").unwrap();
+    std::fs::remove_file("temp_arithmetic.vm").unwrap();
 }
