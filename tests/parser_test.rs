@@ -261,3 +261,43 @@ fn test_goto_multiple() {
     
     std::fs::remove_file("temp_gotos.vm").unwrap();
 }
+#[test]
+fn test_if_goto() {
+    let content = "if-goto LOOP";
+    std::fs::write("temp_ifgoto.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_ifgoto.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CIf));
+    assert_eq!(cmd.arg1, "LOOP");
+    assert_eq!(cmd.arg2, None);
+    
+    std::fs::remove_file("temp_ifgoto.vm").unwrap();
+}
+
+#[test]
+fn test_if_goto_multiple() {
+    let content = "
+        if-goto END
+        if-goto LOOP
+        if-goto WHILE
+    ";
+    std::fs::write("temp_ifgotos.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_ifgotos.vm").unwrap();
+    
+    let expected = vec!["END", "LOOP", "WHILE"];
+    
+    for &name in expected.iter() {
+        assert!(parser.has_more_commands());
+        parser.advance();
+        let cmd = parser.current();
+        assert!(matches!(cmd.cmd_type, CommandType::CIf));
+        assert_eq!(cmd.arg1, name);
+        assert_eq!(cmd.arg2, None);
+    }
+    
+    std::fs::remove_file("temp_ifgotos.vm").unwrap();
+}

@@ -6,7 +6,7 @@ pub enum CommandType {
     CArithmetic,
     CLabel,     
     CGoto,      
-    //CIf,        
+    CIf,        
     //CFunction,  
     //CCall,      
     //CReturn, 
@@ -82,14 +82,21 @@ impl Parser {
                         arg1: tokens[1].to_string(),
                         arg2: None,
                     }
-                }
+                },
                 "goto" => {
                     ParsedCommand {
                         cmd_type: CommandType::CGoto,
                         arg1: tokens[1].to_string(),
                         arg2: None,
                     }
-                }
+                },
+                "if-goto" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CIf,
+                        arg1: tokens[1].to_string(),
+                        arg2: None,
+                    }
+                },
 
                 _ => panic!("Comando desconhecido: {}", tokens[0]),
             };

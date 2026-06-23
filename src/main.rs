@@ -64,6 +64,9 @@ fn main() {
             parser::CommandType::CGoto => {
                 println!("label {}", cmd.arg1);
             }
+            parser::CommandType::CIf => {
+                println!("label {}", cmd.arg1);
+            }
         }
     }
     
