@@ -4,6 +4,12 @@ pub enum CommandType {
     CPush,
     CPop,
     CArithmetic,
+    CLabel,     
+    CGoto,      
+    CIf,        
+    CFunction,  
+    CCall,      
+    CReturn, 
 }
 #[derive(Debug, PartialEq, Clone)] 
 pub struct ParsedCommand {
