@@ -70,6 +70,9 @@ fn main() {
             parser::CommandType::CFunction => {
                 println!("label {}", cmd.arg1);
             },
+            parser::CommandType::CCall => {
+                println!("label {}", cmd.arg1);
+            },
 
         }
     }

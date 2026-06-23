@@ -361,3 +361,63 @@ fn test_function_multiple() {
     
     std::fs::remove_file("temp_functions.vm").unwrap();
 }
+#[test]
+fn test_call() {
+    let content = "call Sys.main 0";
+    std::fs::write("temp_call.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_call.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CCall));
+    assert_eq!(cmd.arg1, "Sys.main");
+    assert_eq!(cmd.arg2, Some(0));
+    
+    std::fs::remove_file("temp_call.vm").unwrap();
+}
+
+#[test]
+fn test_call_with_args() {
+    let content = "call Math.add 2";
+    std::fs::write("temp_call_args.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_call_args.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CCall));
+    assert_eq!(cmd.arg1, "Math.add");
+    assert_eq!(cmd.arg2, Some(2));
+    
+    std::fs::remove_file("temp_call_args.vm").unwrap();
+}
+
+#[test]
+fn test_call_multiple() {
+    let content = "
+        call Sys.main 0
+        call Math.add 2
+        call Sys.add12 1
+    ";
+    std::fs::write("temp_calls.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_calls.vm").unwrap();
+    
+    let expected = vec![
+        ("Sys.main", 0),
+        ("Math.add", 2),
+        ("Sys.add12", 1),
+    ];
+    
+    for &(name, nargs) in expected.iter() {
+        assert!(parser.has_more_commands());
+        parser.advance();
+        let cmd = parser.current();
+        assert!(matches!(cmd.cmd_type, CommandType::CCall));
+        assert_eq!(cmd.arg1, name);
+        assert_eq!(cmd.arg2, Some(nargs));
+    }
+    
+    std::fs::remove_file("temp_calls.vm").unwrap();
+}

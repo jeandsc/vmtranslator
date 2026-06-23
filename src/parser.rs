@@ -8,7 +8,7 @@ pub enum CommandType {
     CGoto,      
     CIf,        
     CFunction,  
-    //CCall,      
+    CCall,      
     //CReturn, 
 }
 #[derive(Debug, PartialEq, Clone)] 
@@ -100,6 +100,13 @@ impl Parser {
                 "function" => {
                     ParsedCommand {
                         cmd_type: CommandType::CFunction,
+                        arg1: tokens[1].to_string(),
+                        arg2: Some(tokens[2].parse().unwrap()),
+                    }
+                },
+                "call" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CCall,
                         arg1: tokens[1].to_string(),
                         arg2: Some(tokens[2].parse().unwrap()),
                     }
