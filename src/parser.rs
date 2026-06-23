@@ -7,7 +7,7 @@ pub enum CommandType {
     CLabel,     
     CGoto,      
     CIf,        
-    //CFunction,  
+    CFunction,  
     //CCall,      
     //CReturn, 
 }
@@ -95,6 +95,13 @@ impl Parser {
                         cmd_type: CommandType::CIf,
                         arg1: tokens[1].to_string(),
                         arg2: None,
+                    }
+                },
+                "function" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CFunction,
+                        arg1: tokens[1].to_string(),
+                        arg2: Some(tokens[2].parse().unwrap()),
                     }
                 },
 

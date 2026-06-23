@@ -301,3 +301,63 @@ fn test_if_goto_multiple() {
     
     std::fs::remove_file("temp_ifgotos.vm").unwrap();
 }
+#[test]
+fn test_function() {
+    let content = "function Sys.init 0";
+    std::fs::write("temp_function.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_function.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CFunction));
+    assert_eq!(cmd.arg1, "Sys.init");
+    assert_eq!(cmd.arg2, Some(0));
+    
+    std::fs::remove_file("temp_function.vm").unwrap();
+}
+
+#[test]
+fn test_function_with_locals() {
+    let content = "function Sys.main 2";
+    std::fs::write("temp_function_locals.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_function_locals.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CFunction));
+    assert_eq!(cmd.arg1, "Sys.main");
+    assert_eq!(cmd.arg2, Some(2));
+    
+    std::fs::remove_file("temp_function_locals.vm").unwrap();
+}
+
+#[test]
+fn test_function_multiple() {
+    let content = "
+        function Sys.init 0
+        function Sys.main 2
+        function Sys.add12 0
+    ";
+    std::fs::write("temp_functions.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_functions.vm").unwrap();
+    
+    let expected = vec![
+        ("Sys.init", 0),
+        ("Sys.main", 2),
+        ("Sys.add12", 0),
+    ];
+    
+    for &(name, nlocals) in expected.iter() {
+        assert!(parser.has_more_commands());
+        parser.advance();
+        let cmd = parser.current();
+        assert!(matches!(cmd.cmd_type, CommandType::CFunction));
+        assert_eq!(cmd.arg1, name);
+        assert_eq!(cmd.arg2, Some(nlocals));
+    }
+    
+    std::fs::remove_file("temp_functions.vm").unwrap();
+}
