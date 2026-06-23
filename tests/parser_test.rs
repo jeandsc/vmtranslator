@@ -182,3 +182,42 @@ fn test_mixed_with_arithmetic() {
     
     std::fs::remove_file("temp_arithmetic.vm").unwrap();
 }
+#[test]
+fn test_label() {
+    let content = "label LOOP";
+    std::fs::write("temp_label.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_label.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CLabel));
+    assert_eq!(cmd.arg1, "LOOP");
+    assert_eq!(cmd.arg2, None);
+    
+    std::fs::remove_file("temp_label.vm").unwrap();
+}
+#[test]
+fn test_label_multiple() {
+    let content = "
+        label LOOP
+        label END
+        label WHILE
+    ";
+    std::fs::write("temp_labels.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_labels.vm").unwrap();
+    
+    let expected = vec!["LOOP", "END", "WHILE"];
+    
+    for &name in expected.iter() {
+        assert!(parser.has_more_commands());
+        parser.advance();
+        let cmd = parser.current();
+        assert!(matches!(cmd.cmd_type, CommandType::CLabel));
+        assert_eq!(cmd.arg1, name);
+        assert_eq!(cmd.arg2, None);
+    }
+    
+    std::fs::remove_file("temp_labels.vm").unwrap();
+}

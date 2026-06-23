@@ -5,11 +5,11 @@ pub enum CommandType {
     CPop,
     CArithmetic,
     CLabel,     
-    CGoto,      
-    CIf,        
-    CFunction,  
-    CCall,      
-    CReturn, 
+    //CGoto,      
+    //CIf,        
+    //CFunction,  
+    //CCall,      
+    //CReturn, 
 }
 #[derive(Debug, PartialEq, Clone)] 
 pub struct ParsedCommand {
@@ -76,6 +76,13 @@ impl Parser {
                         arg2: None,
                     }
                 },
+                "label" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CLabel,
+                        arg1: tokens[1].to_string(),
+                        arg2: None,
+                    }
+                }
 
                 _ => panic!("Comando desconhecido: {}", tokens[0]),
             };

@@ -58,6 +58,9 @@ fn main() {
                     process::exit(1);
                 }
             },
+            parser::CommandType::CLabel => {
+                println!("label {}", cmd.arg1);
+            }
         }
     }
     
