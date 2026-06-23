@@ -5,7 +5,7 @@ pub enum CommandType {
     CPop,
     CArithmetic,
     CLabel,     
-    //CGoto,      
+    CGoto,      
     //CIf,        
     //CFunction,  
     //CCall,      
@@ -79,6 +79,13 @@ impl Parser {
                 "label" => {
                     ParsedCommand {
                         cmd_type: CommandType::CLabel,
+                        arg1: tokens[1].to_string(),
+                        arg2: None,
+                    }
+                }
+                "goto" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CGoto,
                         arg1: tokens[1].to_string(),
                         arg2: None,
                     }

@@ -221,3 +221,43 @@ fn test_label_multiple() {
     
     std::fs::remove_file("temp_labels.vm").unwrap();
 }
+#[test]
+fn test_goto() {
+    let content = "goto LOOP";
+    std::fs::write("temp_goto.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_goto.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CGoto));
+    assert_eq!(cmd.arg1, "LOOP");
+    assert_eq!(cmd.arg2, None);
+    
+    std::fs::remove_file("temp_goto.vm").unwrap();
+}
+
+#[test]
+fn test_goto_multiple() {
+    let content = "
+        goto START
+        goto END
+        goto LOOP
+    ";
+    std::fs::write("temp_gotos.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_gotos.vm").unwrap();
+    
+    let expected = vec!["START", "END", "LOOP"];
+    
+    for &name in expected.iter() {
+        assert!(parser.has_more_commands());
+        parser.advance();
+        let cmd = parser.current();
+        assert!(matches!(cmd.cmd_type, CommandType::CGoto));
+        assert_eq!(cmd.arg1, name);
+        assert_eq!(cmd.arg2, None);
+    }
+    
+    std::fs::remove_file("temp_gotos.vm").unwrap();
+}

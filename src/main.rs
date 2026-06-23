@@ -60,6 +60,9 @@ fn main() {
             },
             parser::CommandType::CLabel => {
                 println!("label {}", cmd.arg1);
+            },
+            parser::CommandType::CGoto => {
+                println!("label {}", cmd.arg1);
             }
         }
     }
