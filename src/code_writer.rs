@@ -6,6 +6,7 @@ pub struct CodeWriter {
     filename: String,
     func_name: String,    
     label_counter: u32,
+    return_counter: u32,
 }
 
 impl CodeWriter {
@@ -17,6 +18,7 @@ impl CodeWriter {
             filename,
             func_name: String::new(),  
             label_counter: 0,
+            return_counter: 0,
         })
     }
     
@@ -348,5 +350,54 @@ impl CodeWriter {
     }
     pub fn close(&mut self) -> std::io::Result<()> {
         self.file.flush()
+    }
+    pub fn write_call(&mut self, func_name: &str, n_args: u16) -> std::io::Result<()> {
+        let return_label = format!("{}$ret.{}", func_name, self.return_counter);
+        self.return_counter += 1;
+
+        
+        writeln!(self.file, "@{}", return_label)?;
+        writeln!(self.file, "D=A")?;
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "A=M")?;
+        writeln!(self.file, "M=D")?;
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "M=M+1")?;
+
+    
+        for reg in ["LCL", "ARG", "THIS", "THAT"] {
+            writeln!(self.file, "@{}", reg)?;
+            writeln!(self.file, "D=M")?;
+            writeln!(self.file, "@SP")?;
+            writeln!(self.file, "A=M")?;
+            writeln!(self.file, "M=D")?;
+            writeln!(self.file, "@SP")?;
+            writeln!(self.file, "M=M+1")?;
+        }
+
+   
+        writeln!(self.file, "@5")?;
+        writeln!(self.file, "D=A")?;
+        writeln!(self.file, "@{}", n_args)?;
+        writeln!(self.file, "D=D+A")?;
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "D=M-D")?;
+        writeln!(self.file, "@ARG")?;
+        writeln!(self.file, "M=D")?;
+
+
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@LCL")?;
+        writeln!(self.file, "M=D")?;
+
+  
+        writeln!(self.file, "@{}", func_name)?;
+        writeln!(self.file, "0;JMP")?;
+
+        
+        writeln!(self.file, "({})", return_label)?;
+
+        Ok(())
     }
 }

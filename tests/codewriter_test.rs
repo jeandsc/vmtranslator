@@ -439,3 +439,45 @@ fn test_write_function_updates_context() {
     
     std::fs::remove_file(output_path).unwrap();
 }
+#[test]
+fn test_write_call_basic() {
+    let output_path = "temp_call.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_call("Sys.main", 0).unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+
+    assert!(content.contains("(Sys.main$ret.0)"));
+
+    assert!(content.contains("@Sys.main"));
+    assert!(content.contains("0;JMP"));
+
+    assert!(content.contains("@ARG"));
+    assert!(content.contains("@LCL"));
+
+    assert!(content.contains("@LCL"));
+    assert!(content.contains("@ARG"));
+    assert!(content.contains("@THIS"));
+    assert!(content.contains("@THAT"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_write_call_increments_counter() {
+    let output_path = "temp_calls.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_call("foo", 2).unwrap();
+    cw.write_call("bar", 1).unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    
+    assert!(content.contains("(foo$ret.0)"));
+    assert!(content.contains("(bar$ret.1)"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
