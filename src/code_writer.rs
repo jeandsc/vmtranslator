@@ -322,6 +322,11 @@ impl CodeWriter {
         writeln!(self.file, "({}${})", self.func_name, label)?;
         Ok(())
     }
+    pub fn write_goto(&mut self, label: &str) -> std::io::Result<()> {
+        writeln!(self.file, "@{}${}", self.func_name, label)?;
+        writeln!(self.file, "0;JMP")?;
+        Ok(())
+    }
     pub fn close(&mut self) -> std::io::Result<()> {
         self.file.flush()
     }

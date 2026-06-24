@@ -324,3 +324,35 @@ fn test_write_label() {
     
     std::fs::remove_file(output_path).unwrap();
 }
+#[test]
+fn test_write_goto() {
+    let output_path = "temp_goto.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_goto("LOOP").unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    // func_name está vazio, então sai @$LOOP
+    assert!(content.contains("@$LOOP"));
+    assert!(content.contains("0;JMP"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_write_goto_multiple() {
+    let output_path = "temp_gotos.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_goto("START").unwrap();
+    cw.write_goto("END").unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    assert!(content.contains("@$START"));
+    assert!(content.contains("@$END"));
+    assert!(content.contains("0;JMP"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
