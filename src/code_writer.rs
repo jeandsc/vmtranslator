@@ -4,7 +4,8 @@ use std::io::Write;
 pub struct CodeWriter {
     file: File,
     filename: String,
-    label_counter: u32
+    func_name: String,    
+    label_counter: u32,
 }
 
 impl CodeWriter {
@@ -14,6 +15,7 @@ impl CodeWriter {
         Ok(CodeWriter {
             file,
             filename,
+            func_name: String::new(),  
             label_counter: 0,
         })
     }
@@ -316,7 +318,10 @@ impl CodeWriter {
     }
         Ok(())
     }
-    
+    pub fn write_label(&mut self, label: &str) -> std::io::Result<()> {
+        writeln!(self.file, "({}${})", self.func_name, label)?;
+        Ok(())
+    }
     pub fn close(&mut self) -> std::io::Result<()> {
         self.file.flush()
     }

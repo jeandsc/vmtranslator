@@ -73,6 +73,9 @@ fn main() {
             parser::CommandType::CCall => {
                 println!("label {}", cmd.arg1);
             },
+            parser::CommandType::CReturn => {
+                println!("label {}", cmd.arg1);
+            },
 
         }
     }

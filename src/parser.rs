@@ -9,7 +9,7 @@ pub enum CommandType {
     CIf,        
     CFunction,  
     CCall,      
-    //CReturn, 
+    CReturn, 
 }
 #[derive(Debug, PartialEq, Clone)] 
 pub struct ParsedCommand {
@@ -109,6 +109,13 @@ impl Parser {
                         cmd_type: CommandType::CCall,
                         arg1: tokens[1].to_string(),
                         arg2: Some(tokens[2].parse().unwrap()),
+                    }
+                },
+                "return" => {
+                    ParsedCommand {
+                        cmd_type: CommandType::CReturn,
+                        arg1: String::new(),
+                        arg2: None,
                     }
                 },
 

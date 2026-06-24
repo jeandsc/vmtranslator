@@ -310,3 +310,17 @@ fn test_write_arithmetic_lt() {
     assert_eq!(content, expected);
     std::fs::remove_file("test_lt.asm").unwrap();
 }
+#[test]
+fn test_write_label() {
+    let output_path = "temp_label.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_label("LOOP").unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    // func_name está vazio, então sai ($LOOP)
+    assert!(content.contains("($LOOP)"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}

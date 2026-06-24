@@ -421,3 +421,66 @@ fn test_call_multiple() {
     
     std::fs::remove_file("temp_calls.vm").unwrap();
 }
+#[test]
+fn test_return() {
+    let content = "return";
+    std::fs::write("temp_return.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_return.vm").unwrap();
+    parser.advance();
+    let cmd = parser.current();
+    
+    assert!(matches!(cmd.cmd_type, CommandType::CReturn));
+    assert_eq!(cmd.arg1, "");
+    assert_eq!(cmd.arg2, None);
+    
+    std::fs::remove_file("temp_return.vm").unwrap();
+}
+
+#[test]
+fn test_return_multiple() {
+    let content = "
+        return
+        return
+        return
+    ";
+    std::fs::write("temp_returns.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_returns.vm").unwrap();
+    
+    for _ in 0..3 {
+        assert!(parser.has_more_commands());
+        parser.advance();
+        let cmd = parser.current();
+        assert!(matches!(cmd.cmd_type, CommandType::CReturn));
+        assert_eq!(cmd.arg1, "");
+        assert_eq!(cmd.arg2, None);
+    }
+    
+    std::fs::remove_file("temp_returns.vm").unwrap();
+}
+
+#[test]
+fn test_return_mixed_with_function() {
+    let content = "
+        function Sys.init 0
+        call Sys.main 0
+        return
+    ";
+    std::fs::write("temp_mixed_fn.vm", content).unwrap();
+    
+    let mut parser = Parser::new("temp_mixed_fn.vm").unwrap();
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CFunction));
+    assert_eq!(parser.current().arg1, "Sys.init");
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CCall));
+    assert_eq!(parser.current().arg1, "Sys.main");
+    
+    parser.advance();
+    assert!(matches!(parser.current().cmd_type, CommandType::CReturn));
+    
+    std::fs::remove_file("temp_mixed_fn.vm").unwrap();
+}
