@@ -356,3 +356,40 @@ fn test_write_goto_multiple() {
     
     std::fs::remove_file(output_path).unwrap();
 }
+#[test]
+fn test_write_if() {
+    let output_path = "temp_if.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_if("END").unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    // func_name está vazio, então sai @$END
+    assert!(content.contains("@SP"));
+    assert!(content.contains("AM=M-1"));
+    assert!(content.contains("D=M"));
+    assert!(content.contains("@$END"));
+    assert!(content.contains("D;JNE"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_write_if_multiple() {
+    let output_path = "temp_ifs.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_if("LOOP").unwrap();
+    cw.write_if("EXIT").unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    assert!(content.contains("@$LOOP"));
+    assert!(content.contains("@$EXIT"));
+    // D;JNE deve aparecer 2 vezes
+    let jne_count = content.matches("D;JNE").count();
+    assert_eq!(jne_count, 2);
+    
+    std::fs::remove_file(output_path).unwrap();
+}

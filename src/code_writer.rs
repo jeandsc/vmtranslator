@@ -327,6 +327,14 @@ impl CodeWriter {
         writeln!(self.file, "0;JMP")?;
         Ok(())
     }
+    pub fn write_if(&mut self, label: &str) -> std::io::Result<()> {
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "AM=M-1")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@{}${}", self.func_name, label)?;
+        writeln!(self.file, "D;JNE")?;
+        Ok(())
+    }
     pub fn close(&mut self) -> std::io::Result<()> {
         self.file.flush()
     }
