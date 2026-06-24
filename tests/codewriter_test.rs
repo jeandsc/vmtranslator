@@ -319,7 +319,7 @@ fn test_write_label() {
     cw.close().unwrap();
     
     let content = std::fs::read_to_string(output_path).unwrap();
-    // func_name está vazio, então sai ($LOOP)
+    
     assert!(content.contains("($LOOP)"));
     
     std::fs::remove_file(output_path).unwrap();
@@ -333,7 +333,7 @@ fn test_write_goto() {
     cw.close().unwrap();
     
     let content = std::fs::read_to_string(output_path).unwrap();
-    // func_name está vazio, então sai @$LOOP
+    
     assert!(content.contains("@$LOOP"));
     assert!(content.contains("0;JMP"));
     
@@ -365,7 +365,7 @@ fn test_write_if() {
     cw.close().unwrap();
     
     let content = std::fs::read_to_string(output_path).unwrap();
-    // func_name está vazio, então sai @$END
+    
     assert!(content.contains("@SP"));
     assert!(content.contains("AM=M-1"));
     assert!(content.contains("D=M"));
@@ -387,7 +387,7 @@ fn test_write_if_multiple() {
     let content = std::fs::read_to_string(output_path).unwrap();
     assert!(content.contains("@$LOOP"));
     assert!(content.contains("@$EXIT"));
-    // D;JNE deve aparecer 2 vezes
+    
     let jne_count = content.matches("D;JNE").count();
     assert_eq!(jne_count, 2);
     
@@ -531,6 +531,43 @@ fn test_write_return_multiple() {
     
     let lcl_count = content.matches("@LCL").count();
     assert!(lcl_count >= 4, "Esperava múltiplas referências a LCL, encontrou {}", lcl_count);
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+#[test]
+fn test_bootstrap_is_written() {
+    let output_path = "temp_bootstrap.asm";
+    let cw = CodeWriter::new(output_path).unwrap();
+    drop(cw); 
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    let lines: Vec<&str> = content.lines().collect();
+    
+
+    assert!(lines.len() >= 6, "Bootstrap incompleto");
+    assert_eq!(lines[0], "@256");
+    assert_eq!(lines[1], "D=A");
+    assert_eq!(lines[2], "@SP");
+    assert_eq!(lines[3], "A=M");
+    assert_eq!(lines[4], "M=D");
+    assert_eq!(lines[5], "@Sys.init");
+    assert_eq!(lines[6], "0;JMP");
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_bootstrap_before_other_commands() {
+    let output_path = "temp_bootstrap_order.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    cw.write_push("constant", 42).unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    let bootstrap_pos = content.find("@256").unwrap();
+    let push_pos = content.find("@42").unwrap();
+    
+    assert!(bootstrap_pos < push_pos, "Bootstrap deve vir antes de qualquer comando VM");
     
     std::fs::remove_file(output_path).unwrap();
 }

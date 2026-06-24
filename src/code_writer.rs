@@ -13,13 +13,18 @@ impl CodeWriter {
     pub fn new(filename: &str) -> Result<Self, std::io::Error> {
         let file = File::create(filename)?;
         let filename = filename.replace(".asm", "");
-        Ok(CodeWriter {
+        
+        let mut cw = CodeWriter {
             file,
             filename,
-            func_name: String::new(),  
+            func_name: String::new(),
             label_counter: 0,
-            return_counter: 0,
-        })
+            return_counter: 0,   // ← NOVO
+        };
+        
+        cw.write_bootstrap()?;
+        
+        Ok(cw)
     }
     
     pub fn write_push(&mut self, segment: &str, index: u16) -> std::io::Result<()> {
@@ -461,6 +466,20 @@ impl CodeWriter {
         writeln!(self.file, "A=M")?;
         writeln!(self.file, "0;JMP")?;
 
+        Ok(())
+    }
+    fn write_bootstrap(&mut self) -> std::io::Result<()> {
+        
+        writeln!(self.file, "@256")?;
+        writeln!(self.file, "D=A")?;
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "A=M")?;
+        writeln!(self.file, "M=D")?;
+        
+        
+        writeln!(self.file, "@Sys.init")?;
+        writeln!(self.file, "0;JMP")?;
+        
         Ok(())
     }
 }
