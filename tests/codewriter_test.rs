@@ -393,3 +393,49 @@ fn test_write_if_multiple() {
     
     std::fs::remove_file(output_path).unwrap();
 }
+#[test]
+fn test_write_function_no_locals() {
+    let output_path = "temp_func_nolocals.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_function("Sys.init", 0).unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    assert!(content.contains("(Sys.init)"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_write_function_with_locals() {
+    let output_path = "temp_func_locals.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_function("Sys.main", 2).unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    assert!(content.contains("(Sys.main)"));
+
+    let push_count = content.matches("@0\nD=A").count();
+    assert_eq!(push_count, 2, "Esperava 2 inicializações de local");
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_write_function_updates_context() {
+    let output_path = "temp_func_context.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_function("Foo", 0).unwrap();
+    cw.write_label("LOOP").unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    assert!(content.contains("(Foo)"));
+    assert!(content.contains("(Foo$LOOP)"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}

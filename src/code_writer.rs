@@ -335,6 +335,17 @@ impl CodeWriter {
         writeln!(self.file, "D;JNE")?;
         Ok(())
     }
+    pub fn write_function(&mut self, func_name: &str, n_locals: u16) -> std::io::Result<()> {
+        self.func_name = func_name.to_string();
+
+        writeln!(self.file, "({})", func_name)?;
+    
+        for _ in 0..n_locals {
+            self.write_push("constant", 0)?;
+        }
+        
+        Ok(())
+    }
     pub fn close(&mut self) -> std::io::Result<()> {
         self.file.flush()
     }
