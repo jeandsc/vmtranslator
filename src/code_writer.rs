@@ -400,4 +400,67 @@ impl CodeWriter {
 
         Ok(())
     }
+    pub fn write_return(&mut self) -> std::io::Result<()> {
+        
+        writeln!(self.file, "@LCL")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@R13")?;
+        writeln!(self.file, "M=D")?;
+
+       
+        writeln!(self.file, "@5")?;
+        writeln!(self.file, "A=D-A")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@R14")?;
+        writeln!(self.file, "M=D")?;
+
+      
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "AM=M-1")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@ARG")?;
+        writeln!(self.file, "A=M")?;
+        writeln!(self.file, "M=D")?;
+
+      
+        writeln!(self.file, "@ARG")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@SP")?;
+        writeln!(self.file, "M=D+1")?;
+
+       
+        writeln!(self.file, "@R13")?;
+        writeln!(self.file, "AM=M-1")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@THAT")?;
+        writeln!(self.file, "M=D")?;
+
+    
+        writeln!(self.file, "@R13")?;
+        writeln!(self.file, "AM=M-1")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@THIS")?;
+        writeln!(self.file, "M=D")?;
+
+   
+        writeln!(self.file, "@R13")?;
+        writeln!(self.file, "AM=M-1")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@ARG")?;
+        writeln!(self.file, "M=D")?;
+
+
+        writeln!(self.file, "@R13")?;
+        writeln!(self.file, "AM=M-1")?;
+        writeln!(self.file, "D=M")?;
+        writeln!(self.file, "@LCL")?;
+        writeln!(self.file, "M=D")?;
+
+   
+        writeln!(self.file, "@R14")?;
+        writeln!(self.file, "A=M")?;
+        writeln!(self.file, "0;JMP")?;
+
+        Ok(())
+    }
 }

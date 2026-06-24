@@ -481,3 +481,56 @@ fn test_write_call_increments_counter() {
     
     std::fs::remove_file(output_path).unwrap();
 }
+#[test]
+fn test_write_return_basic() {
+    let output_path = "temp_return.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_return().unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    
+    
+    assert!(content.contains("@LCL"));
+    assert!(content.contains("@R13"));
+    
+    
+    assert!(content.contains("@5"));
+    assert!(content.contains("@R14"));
+    
+    
+    assert!(content.contains("@SP"));
+    assert!(content.contains("AM=M-1"));
+    assert!(content.contains("@ARG"));
+    
+
+    assert!(content.contains("M=D+1"));
+    
+
+    assert!(content.contains("@THAT"));
+    assert!(content.contains("@THIS"));
+    
+    
+    assert!(content.contains("0;JMP"));
+    
+    std::fs::remove_file(output_path).unwrap();
+}
+
+#[test]
+fn test_write_return_multiple() {
+    let output_path = "temp_returns.asm";
+    let mut cw = CodeWriter::new(output_path).unwrap();
+    
+    cw.write_return().unwrap();
+    cw.write_return().unwrap();
+    cw.close().unwrap();
+    
+    let content = std::fs::read_to_string(output_path).unwrap();
+    
+    
+    let lcl_count = content.matches("@LCL").count();
+    assert!(lcl_count >= 4, "Esperava múltiplas referências a LCL, encontrou {}", lcl_count);
+    
+    std::fs::remove_file(output_path).unwrap();
+}
