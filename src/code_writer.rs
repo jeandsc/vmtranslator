@@ -26,7 +26,10 @@ impl CodeWriter {
         
         Ok(cw)
     }
-    
+    pub fn set_filename(&mut self, filename: &str) {
+        self.filename = filename.to_string();
+    }
+        
     pub fn write_push(&mut self, segment: &str, index: u16) -> std::io::Result<()> {
         match segment {
             "constant" => {
@@ -42,7 +45,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@LCL")?;
-                writeln!(self.file, "A=M+D")?;
+                writeln!(self.file, "A=D+M")?;
                 writeln!(self.file, "D=M")?;
                 writeln!(self.file, "@SP")?;
                 writeln!(self.file, "A=M")?;
@@ -54,7 +57,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@ARG")?;
-                writeln!(self.file, "A=M+D")?;
+                writeln!(self.file, "A=D+M")?;
                 writeln!(self.file, "D=M")?;
                 writeln!(self.file, "@SP")?;
                 writeln!(self.file, "A=M")?;
@@ -66,7 +69,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@THIS")?;
-                writeln!(self.file, "A=M+D")?;
+                writeln!(self.file, "A=D+M")?;
                 writeln!(self.file, "D=M")?;
                 writeln!(self.file, "@SP")?;
                 writeln!(self.file, "A=M")?;
@@ -78,7 +81,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@THAT")?;
-                writeln!(self.file, "A=M+D")?;
+                writeln!(self.file, "A=D+M")?;
                 writeln!(self.file, "D=M")?;
                 writeln!(self.file, "@SP")?;
                 writeln!(self.file, "A=M")?;
@@ -127,7 +130,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@LCL")?;
-                writeln!(self.file, "D=M+D")?;
+                writeln!(self.file, "D=D+M")?;
                 writeln!(self.file, "@R13")?;
                 writeln!(self.file, "M=D")?;
                 writeln!(self.file, "@SP")?;
@@ -141,7 +144,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@ARG")?;
-                writeln!(self.file, "D=M+D")?;
+                writeln!(self.file, "D=D+M")?;
                 writeln!(self.file, "@R13")?;
                 writeln!(self.file, "M=D")?;
                 writeln!(self.file, "@SP")?;
@@ -155,7 +158,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@THIS")?;
-                writeln!(self.file, "D=M+D")?;
+                writeln!(self.file, "D=D+M")?;
                 writeln!(self.file, "@R13")?;
                 writeln!(self.file, "M=D")?;
                 writeln!(self.file, "@SP")?;
@@ -169,7 +172,7 @@ impl CodeWriter {
                 writeln!(self.file, "@{}", index)?;
                 writeln!(self.file, "D=A")?;
                 writeln!(self.file, "@THAT")?;
-                writeln!(self.file, "D=M+D")?;
+                writeln!(self.file, "D=D+M")?;
                 writeln!(self.file, "@R13")?;
                 writeln!(self.file, "M=D")?;
                 writeln!(self.file, "@SP")?;
